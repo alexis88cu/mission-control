@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Market Environment — Trader League</title>
+<style>
+:root {
+  --bg: #08080e; --bg2: #0f0f1a; --bg3: #141424; --bg4: #1a1a2e;
+  --border: rgba(255,255,255,.06); --border2: rgba(255,255,255,.11);
+  --text: #e4e4f0; --text2: #8888a8; --text3: #4a4a6a;
+  --green: #10b981; --green-b: #34d399; --green-dim: rgba(16,185,129,.1);
+  --cyan: #06b6d4;  --cyan-b: #22d3ee;  --cyan-dim: rgba(6,182,212,.1);
+  --violet:#7c3aed; --violet-b:#a78bfa; --violet-dim: rgba(124,58,237,.1);
+  --amber: #f59e0b; --amber-b:#fbbf24; --amber-dim: rgba(245,158,11,.1);
+  --rose:  #f43f5e; --rose-b: #fb7185;  --rose-dim: rgba(244,63,94,.1);
+  --blue:  #3b82f6; --blue-b: #60a5fa;  --blue-dim: rgba(59,130,246,.1);
+  --orange:#f97316; --orange-b:#fb923c;
+  --mono: 'JetBrains Mono','Fira Code',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh}
+.page{max-width:1500px;margin:0 auto;padding:28px 24px}
+
+/* HEADER */
+.header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border2)}
+.eyebrow{font-size:8px;letter-spacing:.16em;color:var(--text3);text-transform:uppercase;margin-bottom:5px}
+h1{font-size:24px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+h1 span{color:var(--green-b)}
+.header-pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{font-size:8px;padding:4px 10px;border-radius:4px;border:1px solid var(--border2);color:var(--text2)}
+.pill b{color:var(--green-b);font-weight:700}
+
+/* SECTION */
+.sec-title{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.sec-title h2{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);font-weight:700;white-space:nowrap}
+.sec-title .line{flex:1;height:1px;background:var(--border)}
+.mb-32{margin-bottom:32px}
+
+/* TOP STATUS STRIP */
+.status-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:28px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.stat-card .val{font-size:22px;font-weight:700;line-height:1}
+.stat-card .lbl{font-size:7px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+.stat-card .sub{font-size:8px;color:var(--text2);margin-top:5px}
+
+/* ENVIRONMENT HERO */
+.env-hero{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.env-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.env-card.btc{border-color:rgba(16,185,129,.25)}
+.env-card.eth{border-color:rgba(59,130,246,.25)}
+
+.env-header{padding:14px 18px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.env-asset{display:flex;align-items:center;gap:10px}
+.asset-badge{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.env-name{font-size:14px;font-weight:700}
+.env-price{font-size:11px;color:var(--text2);margin-top:2px}
+.env-regime{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.regime-badge{font-size:9px;font-weight:700;padding:4px 10px;border-radius:5px;letter-spacing:.04em}
+.conf-bar-wrap{display:flex;align-items:center;gap:6px}
+.conf-num{font-size:8px;color:var(--text2)}
+.conf-bar{width:80px;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.conf-fill{height:100%;border-radius:2px}
+
+.env-body{padding:14px 18px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.env-section{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px 12px}
+.env-sec-label{font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+
+.signal-row{display:flex;align-items:flex-start;gap:6px;padding:4px 0;border-bottom:1px solid var(--border)}
+.signal-row:last-child{border-bottom:none;padding-bottom:0}
+.signal-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.signal-text{font-size:8px;color:var(--text2);line-height:1.5;flex:1}
+.signal-text b{color:var(--text);font-weight:700}
+
+.strategy-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.strat-tag{font-size:7px;padding:3px 8px;border-radius:4px;font-weight:700}
+.strat-avoid{font-size:7px;padding:3px 8px;border-radius:4px;color:var(--text3);background:rgba(255,255,255,.04);border:1px solid var(--border)}
+
+.trader-compat{display:flex;flex-direction:column;gap:5px}
+.compat-row{display:flex;align-items:center;gap:6px}
+.compat-name{font-size:7.5px;color:var(--text2);width:60px;flex-shrink:0}
+.compat-bar-bg{flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.compat-bar-fill{height:100%;border-radius:3px}
+.compat-pct{font-size:7px;font-weight:700;width:30px;text-align:right;flex-shrink:0}
+
+.regime-hist{display:flex;flex-direction:column;gap:4px}
+.rh-item{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid var(--border)}
+.rh-item:last-child{border-bottom:none;padding-bottom:0}
+.rh-dot{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+.rh-name{font-size:7.5px;color:var(--text2);flex:1}
+.rh-conf{font-size:7px;color:var(--text3);width:32px;text-align:right}
+
+/* KEY SIGNALS GRID */
+.signals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px}
+.sig-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.sig-card-title{font-size:8px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.sig-item{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
+.sig-item:last-child{border-bottom:none;padding-bottom:0}
+.sig-key{font-size:7.5px;color:var(--text2);flex:1;line-height:1.5}
+.sig-val{font-size:8px;font-weight:700;white-space:nowrap}
+.pos{color:var(--green-b)} .neg{color:var(--rose-b)} .neu{color:var(--amber-b)} .info{color:var(--cyan-b)}
+
+/* ALERTS */
+.alerts-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+.alert-card{background:var(--bg2);border-radius:7px;padding:11px 13px}
+.alert-card.high{border:1px solid rgba(244,63,94,.3);background:rgba(244,63,94,.04)}
+.alert-card.warning{border:1px solid rgba(245,158,11,.3);background:rgba(245,158,11,.04)}
+.alert-card.info{border:1px solid rgba(6,182,212,.25);background:rgba(6,182,212,.04)}
+.alert-card.low{border:1px solid var(--border);background:var(--bg2)}
+.alert-top{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.alert-icon{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0}
+.alert-title{font-size:9px;font-weight:700;flex:1}
+.alert-asset{font-size:7px;padding:2px 6px;border-radius:3px;font-weight:700}
+.alert-msg{font-size:7.5px;color:var(--text2);line-height:1.6}
+.alert-tag{display:inline-block;font-size:7px;padding:2px 6px;border-radius:3px;margin-top:6px}
+
+/* MACRO + ONCHAIN */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.macro-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.macro-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+.macro-item:last-child{border-bottom:none;padding-bottom:0}
+.macro-icon{width:22px;height:22px;border-radius:4px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.macro-name{font-size:8px;color:var(--text2);margin-bottom:2px}
+.macro-val{font-size:9px;font-weight:700}
+
+.onchain-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+.onchain-item:last-child{border-bottom:none;padding-bottom:0}
+.oc-bullet{width:7px;height:7px;border-radius:2px;flex-shrink:0;margin-top:3px}
+.oc-label{font-size:8px;font-weight:700;color:var(--text);margin-bottom:2px}
+.oc-detail{font-size:7.5px;color:var(--text2);line-height:1.5}
+.oc-badge{font-size:6.5px;padding:1px 5px;border-radius:3px;font-weight:700;display:inline-block;margin-left:6px;vertical-align:middle}
+
+/* LIQUIDITY */
+.liq-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.liq-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.liq-label{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.liq-zone{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
+.liq-zone:last-of-type{border-bottom:none}
+.liq-price{font-size:11px;font-weight:700;width:72px;flex-shrink:0}
+.liq-bar-area{flex:1}
+.liq-bar-label{font-size:7px;color:var(--text2);margin-bottom:3px;display:flex;justify-content:space-between}
+.liq-bar{height:5px;border-radius:3px}
+.liq-detail{font-size:7px;color:var(--text3);margin-top:2px;line-height:1.5}
+.liq-size{font-size:7px;padding:1px 5px;border-radius:3px;flex-shrink:0}
+
+/* TRADER BEHAVIOR */
+.behavior-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:28px}
+.setup-row{display:grid;grid-template-columns:2fr 80px 80px auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)}
+.setup-row:last-child{border-bottom:none;padding-bottom:0}
+.setup-row.header{font-size:7px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);padding-bottom:8px}
+.setup-name{font-size:8.5px;color:var(--text);font-weight:700}
+.setup-asset{font-size:7px;color:var(--text2)}
+.setup-bar-wrap{display:flex;align-items:center;gap:5px}
+.setup-bar{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.setup-bar-fill{height:100%;border-radius:2px}
+.setup-pct{font-size:7.5px;width:24px}
+.setup-edge{font-size:8px;font-weight:700;text-align:center}
+.setup-note{font-size:7px;color:var(--text3);text-align:right}
+
+/* FOOTER */
+.footer{border-top:1px solid var(--border);padding-top:14px;text-align:center;font-size:7.5px;color:var(--text3)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="eyebrow">ALEXIS OPS · MISSION CONTROL · TRADER LEAGUE</div>
+    <h1>Market <span>Environment</span></h1>
+  </div>
+  <div class="header-pills">
+    <div class="pill">Gen <b>3</b> · Week <b>2</b></div>
+    <div class="pill">BTC <b>$84,320</b> <span style="color:var(--green-b)">+2.41%</span></div>
+    <div class="pill">ETH <b>$3,247</b> <span style="color:var(--green-b)">+1.87%</span></div>
+    <div class="pill">Fear & Greed <b>68</b> — Greed</div>
+    <div class="pill">Macro <b>Crypto Supportive</b></div>
+  </div>
+</div>
+
+<!-- STATUS STRIP -->
+<div class="status-strip">
+  <div class="stat-card" style="border-color:rgba(16,185,129,.2)">
+    <div class="val" style="color:var(--green-b)">BULL</div>
+    <div class="lbl">Market Environment</div>
+    <div class="sub" style="color:var(--green-b)">Risk-On · Trending Up</div>
+  </div>
+  <div class="stat-card" style="border-color:rgba(16,185,129,.2)">
+    <div class="val" style="color:var(--green-b)">82%</div>
+    <div class="lbl">BTC Regime Confidence</div>
+    <div class="sub">Trending Up — Confirmed</div>
+  </div>
+  <div class="stat-card" style="border-color:rgba(59,130,246,.2)">
+    <div class="val" style="color:var(--blue-b)">71%</div>
+    <div class="lbl">ETH Regime Confidence</div>
+    <div class="sub">Breakout Environment</div>
+  </div>
+  <div class="stat-card" style="border-color:rgba(245,158,11,.2)">
+    <div class="val" style="color:var(--amber-b)">68</div>
+    <div class="lbl">Sentiment Index</div>
+    <div class="sub">Greed · 64% Net Long</div>
+  </div>
+  <div class="stat-card">
+    <div class="val" style="color:var(--violet-b)">NEXUS</div>
+    <div class="lbl">Optimal Trader Now</div>
+    <div class="sub">Regime fit 95% · Score 84</div>
+  </div>
+</div>
+
+<!-- ENV HERO — BTC & ETH -->
+<div class="sec-title mb-32" style="margin-bottom:14px">
+  <div style="font-size:11px">◈</div>
+  <h2>Regime Status — BTC & ETH</h2>
+  <div class="line"></div>
+</div>
+
+<div class="env-hero">
+
+  <!-- BTC -->
+  <div class="env-card btc">
+    <div class="env-header">
+      <div class="env-asset">
+        <div class="asset-badge" style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:var(--green-b)">BTC</div>
+        <div>
+          <div class="env-name">Bitcoin</div>
+          <div class="env-price">$84,320 · +2.41% · Vol $38.4B</div>
+        </div>
+      </div>
+      <div class="env-regime">
+        <div class="regime-badge" style="background:var(--green-dim);border:1px solid rgba(16,185,129,.3);color:var(--green-b)">▲ TRENDING UP</div>
+        <div class="conf-bar-wrap">
+          <span class="conf-num">Confidence 82%</span>
+          <div class="conf-bar"><div class="conf-fill" style="width:82%;background:var(--green)"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="env-body">
+
+      <!-- Key Signals -->
+      <div class="env-section" style="grid-column:1/3">
+        <div class="env-sec-label">Key Signals</div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--green)"></div>
+          <div class="signal-text"><b>Price structure:</b> Higher highs, higher lows on 4H. 5 consecutive HH/HL confirmed since $78,200 low.</div>
+        </div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--green)"></div>
+          <div class="signal-text"><b>Trend strength:</b> ADX at 31 — trending. EMA 20 &gt; 50 &gt; 200 stack fully aligned. Golden cross active.</div>
+        </div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--green)"></div>
+          <div class="signal-text"><b>Volume:</b> Expanding on up candles, declining on pullbacks. Healthy trend confirmation.</div>
+        </div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--green)"></div>
+          <div class="signal-text"><b>Momentum:</b> Composite 74/100. RSI 58 — bullish, not overbought. No divergence.</div>
+        </div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--amber)"></div>
+          <div class="signal-text"><b>Early divergence:</b> Minor 1H RSI divergence on latest push. Monitor — not regime change. Tighten SLs above $84,500.</div>
+        </div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--cyan)"></div>
+          <div class="signal-text"><b>Key levels:</b> Support $81,500 · Resistance $86,800 · Short stop cluster $87,200</div>
+        </div>
+      </div>
+
+      <!-- Recommended Strategies -->
+      <div class="env-section">
+        <div class="env-sec-label">Recommended Strategies</div>
+        <div class="strategy-tags">
+          <div class="strat-tag" style="background:var(--green-dim);border:1px solid rgba(16,185,129,.25);color:var(--green-b)">Momentum Breakout</div>
+          <div class="strat-tag" style="background:var(--green-dim);border:1px solid rgba(16,185,129,.25);color:var(--green-b)">Trend Following</div>
+          <div class="strat-tag" style="background:var(--green-dim);border:1px solid rgba(16,185,129,.25);color:var(--green-b)">EMA Stack</div>
+          <div class="strat-tag" style="background:var(--green-dim);border:1px solid rgba(16,185,129,.25);color:var(--green-b)">Volume-Confirmed</div>
+        </div>
+        <div style="margin-top:8px;font-size:7px;color:var(--text3);margin-bottom:6px">AVOID</div>
+        <div class="strategy-tags">
+          <div class="strat-avoid">Mean Reversion</div>
+          <div class="strat-avoid">Counter-trend Shorts</div>
+          <div class="strat-avoid">News Fade</div>
+        </div>
+        <div style="margin-top:8px;font-size:7.5px;color:var(--text2);line-height:1.6;border-top:1px solid var(--border);padding-top:7px">Normal risk · Favor trend entries · Hold winners · Widen TP targets · 1–2% per trade</div>
+      </div>
+
+      <!-- Trader Fit -->
+      <div class="env-section">
+        <div class="env-sec-label">Trader Regime Fit</div>
+        <div class="trader-compat">
+          <div class="compat-row">
+            <div class="compat-name">NEXUS</div>
+            <div class="compat-bar-bg"><div class="compat-bar-fill" style="width:95%;background:var(--green)"></div></div>
+            <div class="compat-pct pos">95%</div>
+          </div>
+          <div class="compat-row">
+            <div class="compat-name">VORTEX</div>
+            <div class="compat-bar-bg"><div class="compat-bar-fill" style="width:88%;background:var(--green)"></div></div>
+            <div class="compat-pct pos">88%</div>
+          </div>
+          <div class="compat-row">
+            <div class="compat-name">ATLAS</div>
+            <div class="compat-bar-bg"><div class="compat-bar-fill" style="width:71%;background:var(--amber)"></div></div>
+            <div class="compat-pct neu">71%</div>
+          </div>
+          <div class="compat-row">
+            <div class="compat-name">SENTINEL</div>
+            <div class="compat-bar-bg"><div class="compat-bar-fill" style="width:62%;background:var(--amber)"></div></div>
+            <div class="compat-pct neu">62%</div>
+          </div>
+          <div class="compat-row">
+            <div class="compat-name">CIPHER</div>
+            <div class="compat-bar-bg"><div class="compat-bar-fill" style="width:58%;background:var(--rose)"></div></div>
+            <div class="compat-pct neg">58%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Regime History -->
+      <div class="env-section" style="grid-column:1/3">
+        <div class="env-sec-label">Regime History — BTC</div>
+        <div class="regime-hist">
+          <div class="rh-item"><div class="rh-dot" style="background:var(--green)"></div><div class="rh-name">Trending Up (current)</div><div class="rh-conf pos">82%</div></div>
+          <div class="rh-item"><div class="rh-dot" style="background:var(--violet)"></div><div class="rh-name">Volatility Compression · 18h</div><div class="rh-conf">79%</div></div>
+          <div class="rh-item"><div class="rh-dot" style="background:var(--cyan)"></div><div class="rh-name">Range Bound · 32h</div><div class="rh-conf">71%</div></div>
+          <div class="rh-item"><div class="rh-dot" style="background:var(--amber)"></div><div class="rh-name">Reversal Risk · 12h</div><div class="rh-conf">65%</div></div>
+          <div class="rh-item"><div class="rh-dot" style="background:var(--green)"></div><div class="rh-name">Trending Up · 40h</div><div class="rh-conf">68%</div></div>
+          <div class="rh-item"><div class="rh-dot" style="background:var(--orange)"></div><div class="rh-name">Volatility Expansion · 9h</div><div class="rh-conf">88%</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ETH -->
+  <div class="env-card eth">
+    <div class="env-header">
+      <div class="env-asset">
+        <div class="asset-badge" style="background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);color:var(--blue-b)">ETH</div>
+        <div>
+          <div class="env-name">Ethereum</div>
+          <div class="env-price">$3,247 · +1.87% · Vol $18.2B</div>
+        </div>
+      </div>
+      <div class="env-regime">
+        <div class="regime-badge" style="background:var(--blue-dim);border:1px solid rgba(59,130,246,.3);color:var(--blue-b)">● BREAKOUT ENVIRONMENT</div>
+        <div class="conf-bar-wrap">
+          <span class="conf-num">Confidence 71%</span>
+          <div class="conf-bar"><div class="conf-fill" style="width:71%;background:var(--blue)"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="env-body">
+
+      <!-- Key Signals -->
+      <div class="env-section" style="grid-column:1/3">
+        <div class="env-sec-label">Key Signals</div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--blue)"></div>
+          <div class="signal-text"><b>Price coiling:</b> Building pressure below $3,300 resistance. 3 attempts. Classic pre-breakout structure after 3-week range.</div>
+        </div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--blue)"></div>
+          <div class="signal-text"><b>Trend building:</b> ADX 24 — approaching threshold. EMA 20/50 aligned bullish. EMA 50 just turned up.</div>
+        </div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--blue)"></div>
+          <div class="signal-text"><b>Volume accumulation:</b> Picking up near $3,200-$3,300. ATR expanding — early volatility expansion.</div>
+        </div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--amber)"></div>
+          <div class="signal-text"><b>Trap risk:</b> 3 prior $3,300 tests failed. High trap probability on initial break — wait for retest.</div>
+        </div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--green)"></div>
+          <div class="signal-text"><b>Momentum building:</b> RSI 45→54. MACD near bullish crossover. Momentum 58/100. ETH/BTC ratio improving.</div>
+        </div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--cyan)"></div>
+          <div class="signal-text"><b>Key levels:</b> Support $3,080 · Resistance $3,380 · Short stop cascade above $3,380</div>
+        </div>
+      </div>
+
+      <!-- Recommended Strategies -->
+      <div class="env-section">
+        <div class="env-sec-label">Recommended Strategies</div>
+        <div class="strategy-tags">
+          <div class="strat-tag" style="background:var(--blue-dim);border:1px solid rgba(59,130,246,.25);color:var(--blue-b)">Breakout Confirmation</div>
+          <div class="strat-tag" style="background:var(--blue-dim);border:1px solid rgba(59,130,246,.25);color:var(--blue-b)">Volume-Verified Breakout</div>
+          <div class="strat-tag" style="background:var(--blue-dim);border:1px solid rgba(59,130,246,.25);color:var(--blue-b)">ADX Expanding</div>
+          <div class="strat-tag" style="background:var(--blue-dim);border:1px solid rgba(59,130,246,.25);color:var(--blue-b)">Momentum Follow-through</div>
+        </div>
+        <div style="margin-top:8px;font-size:7px;color:var(--text3);margin-bottom:6px">AVOID</div>
+        <div class="strategy-tags">
+          <div class="strat-avoid">Fading Breakouts</div>
+          <div class="strat-avoid">Mean Reversion at breakout</div>
+          <div class="strat-avoid">Premature profit taking</div>
+        </div>
+        <div style="margin-top:8px;font-size:7.5px;color:var(--text2);line-height:1.6;border-top:1px solid var(--border);padding-top:7px">Wait for confirmed break + retest · High-quality entries only · Honor momentum · Up to 2.5% on high-confidence</div>
+      </div>
+
+      <!-- ETH Regime History -->
+      <div class="env-section">
+        <div class="env-sec-label">Regime History — ETH</div>
+        <div class="regime-hist">
+          <div class="rh-item"><div class="rh-dot" style="background:var(--blue)"></div><div class="rh-name">Breakout Env. (current)</div><div class="rh-conf info">71%</div></div>
+          <div class="rh-item"><div class="rh-dot" style="background:var(--cyan)"></div><div class="rh-name">Range Bound · 48h</div><div class="rh-conf">81%</div></div>
+          <div class="rh-item"><div class="rh-dot" style="background:var(--violet)"></div><div class="rh-name">Volatility Compression · 24h</div><div class="rh-conf">74%</div></div>
+          <div class="rh-item"><div class="rh-dot" style="background:var(--cyan)"></div><div class="rh-name">Range Bound · 36h</div><div class="rh-conf">69%</div></div>
+          <div class="rh-item"><div class="rh-dot" style="background:var(--green)"></div><div class="rh-name">Trending Up · 20h</div><div class="rh-conf">62%</div></div>
+        </div>
+      </div>
+
+      <!-- Volatility context -->
+      <div class="env-section" style="grid-column:1/3">
+        <div class="env-sec-label">Volatility Context</div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--green)"></div>
+          <div class="signal-text"><b>BTC ATR14:</b> $2,180 (2.58%) — normal range. BB width 0.068. No compression active. Breakout risk: moderate.</div>
+        </div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--amber)"></div>
+          <div class="signal-text"><b>ETH ATR14:</b> $92 (2.83%) — slightly elevated. BB expanding. ATR expanding from compression. Breakout conditions building.</div>
+        </div>
+        <div class="signal-row">
+          <div class="signal-dot" style="background:var(--cyan)"></div>
+          <div class="signal-text"><b>Regime:</b> Trending — directional momentum dominates over mean reversion. ATR expanding from 2-week compression.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ALERTS -->
+<div class="sec-title mb-32" style="margin-bottom:14px">
+  <div style="font-size:11px">⚡</div>
+  <h2>Active Market Alerts</h2>
+  <div class="line"></div>
+</div>
+
+<div class="alerts-row">
+  <div class="alert-card info">
+    <div class="alert-top">
+      <div class="alert-icon" style="background:rgba(6,182,212,.15);color:var(--cyan-b)">★</div>
+      <div class="alert-title" style="color:var(--cyan-b)">ETF Inflow Surge</div>
+      <div class="alert-asset" style="background:rgba(6,182,212,.1);color:var(--cyan-b)">BTC</div>
+    </div>
+    <div class="alert-msg">BlackRock BTC ETF: $420M single-day inflow — largest in 3 weeks. Historically precedes 48–72h continuation.</div>
+    <div class="alert-tag" style="background:var(--cyan-dim);color:var(--cyan-b)">Institutional</div>
+  </div>
+  <div class="alert-card high">
+    <div class="alert-top">
+      <div class="alert-icon" style="background:rgba(244,63,94,.15);color:var(--rose-b)">!</div>
+      <div class="alert-title" style="color:var(--rose-b)">SEC Clarity — ETH Staking</div>
+      <div class="alert-asset" style="background:rgba(244,63,94,.1);color:var(--rose-b)">ETH</div>
+    </div>
+    <div class="alert-msg">SEC signals no enforcement vs ETH staking. Removes major regulatory overhang. Bullish for ETH staking derivatives.</div>
+    <div class="alert-tag" style="background:var(--rose-dim);color:var(--rose-b)">Regulatory</div>
+  </div>
+  <div class="alert-card info" style="border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.03)">
+    <div class="alert-top">
+      <div class="alert-icon" style="background:rgba(34,197,94,.15);color:var(--green-b)">◎</div>
+      <div class="alert-title" style="color:var(--green-b)">Whale Accumulation</div>
+      <div class="alert-asset" style="background:rgba(34,197,94,.1);color:var(--green-b)">BTC</div>
+    </div>
+    <div class="alert-msg">14 new wallets &gt;1,000 BTC in 72h. Exchange outflows at 3-month high. Smart money accumulation signal confirmed.</div>
+    <div class="alert-tag" style="background:var(--green-dim);color:var(--green-b)">On-Chain</div>
+  </div>
+  <div class="alert-card warning">
+    <div class="alert-top">
+      <div class="alert-icon" style="background:rgba(245,158,11,.15);color:var(--amber-b)">⚠</div>
+      <div class="alert-title" style="color:var(--amber-b)">Liquidity Squeeze Zone</div>
+      <div class="alert-asset" style="background:rgba(245,158,11,.1);color:var(--amber-b)">BTC</div>
+    </div>
+    <div class="alert-msg">$87K = dense short stop cluster. Break triggers cascade. Long liquidations clustered at $83.5K if BTC rejects.</div>
+    <div class="alert-tag" style="background:var(--amber-dim);color:var(--amber-b)">Liquidity</div>
+  </div>
+</div>
+
+<!-- KEY SIGNALS GRID -->
+<div class="sec-title mb-32" style="margin-bottom:14px">
+  <div style="font-size:11px">◉</div>
+  <h2>Key Signal Panels</h2>
+  <div class="line"></div>
+</div>
+
+<div class="signals-grid">
+
+  <!-- Sentiment -->
+  <div class="sig-card" style="border-color:rgba(245,158,11,.2)">
+    <div class="sig-card-title" style="color:var(--amber-b)"><span>◈</span> Sentiment</div>
+    <div class="sig-item">
+      <div class="sig-key">Fear & Greed Index</div>
+      <div class="sig-val neu">68 — Greed</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Overall Sentiment Score</div>
+      <div class="sig-val neu">68 / 100</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Social Sentiment</div>
+      <div class="sig-val pos">71 — Bullish Bias</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Dominant Narrative</div>
+      <div class="sig-val info">ETF + Institutional</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Net Long Position</div>
+      <div class="sig-val neu">64% Long / 36% Short</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">BTC Funding Rate</div>
+      <div class="sig-val neu">0.018%/8h — Elevated</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">ETH Funding Rate</div>
+      <div class="sig-val pos">0.012%/8h — Mild</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Crowded Trade Warning</div>
+      <div class="sig-val neu">Moderate — watch $87K</div>
+    </div>
+  </div>
+
+  <!-- Macro -->
+  <div class="sig-card" style="border-color:rgba(16,185,129,.2)">
+    <div class="sig-card-title" style="color:var(--green-b)"><span>⬡</span> Macro Environment</div>
+    <div class="sig-item">
+      <div class="sig-key">Overall Macro Bias</div>
+      <div class="sig-val pos">Crypto Supportive 68%</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Fed Rate Expectations</div>
+      <div class="sig-val pos">One cut H2 2025</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">DXY Dollar Index</div>
+      <div class="sig-val pos">102.3 — Weakening</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">S&P 500 Correlation</div>
+      <div class="sig-val neu">0.61 — Elevated</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Global Liquidity (M2)</div>
+      <div class="sig-val pos">Expanding — Tailwind</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">ETF Net Inflows (week)</div>
+      <div class="sig-val pos">+$1.2B this week</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Risk Environment</div>
+      <div class="sig-val pos">Risk-On</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Macro Summary</div>
+      <div class="sig-val pos">Fed pivot + weak DXY</div>
+    </div>
+  </div>
+
+  <!-- On-Chain -->
+  <div class="sig-card" style="border-color:rgba(124,58,237,.2)">
+    <div class="sig-card-title" style="color:var(--violet-b)"><span>◎</span> On-Chain Intelligence</div>
+    <div class="sig-item">
+      <div class="sig-key">BTC Exchange Outflow</div>
+      <div class="sig-val pos">28,400 BTC — 3M High</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Whale Accumulation</div>
+      <div class="sig-val pos">14 wallets &gt;1,000 BTC</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">ETH Active Addresses</div>
+      <div class="sig-val pos">+18% WoW — Bullish</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Stablecoin Minting</div>
+      <div class="sig-val pos">$2.1B USDT minted 7d</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">ETH Exchange Inflow</div>
+      <div class="sig-val neg">12,800 ETH — Watch</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">BTC Funding Rate</div>
+      <div class="sig-val neu">0.018% — Sustainable</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Smart Money Signal</div>
+      <div class="sig-val pos">Accumulation — Confirmed</div>
+    </div>
+    <div class="sig-item">
+      <div class="sig-key">Dry Powder</div>
+      <div class="sig-val pos">Stablecoin supply up</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LIQUIDITY MAP -->
+<div class="sec-title mb-32" style="margin-bottom:14px">
+  <div style="font-size:11px">▤</div>
+  <h2>Liquidity Map — Key Zones</h2>
+  <div class="line"></div>
+</div>
+
+<div class="liq-grid">
+  <div class="liq-card" style="border-color:rgba(16,185,129,.18)">
+    <div class="liq-label" style="color:var(--green-b)"><span>BTC</span> Liquidity Zones</div>
+    <div style="font-size:7.5px;color:var(--text3);margin-bottom:10px">Current: <span style="color:var(--green-b)">$84,320</span> · Squeeze risk: <span style="color:var(--amber-b)">MODERATE</span></div>
+
+    <div class="liq-zone">
+      <div class="liq-price" style="color:var(--rose-b)">$87,200</div>
+      <div class="liq-bar-area">
+        <div class="liq-bar-label"><span style="color:var(--rose-b)">SHORT STOP CLUSTER — LARGE</span></div>
+        <div class="liq-bar" style="background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.2)"><div style="width:85%;height:100%;background:var(--rose);border-radius:3px"></div></div>
+        <div class="liq-detail">Heavy short stop-losses above $87,000 — magnet zone, break triggers cascade</div>
+      </div>
+      <div class="liq-size" style="background:rgba(244,63,94,.1);color:var(--rose-b)">LARGE</div>
+    </div>
+
+    <div class="liq-zone">
+      <div class="liq-price" style="color:var(--text2)">$85,000</div>
+      <div class="liq-bar-area">
+        <div class="liq-bar-label"><span style="color:var(--text2)">ROUND NUMBER LIQUIDITY</span></div>
+        <div class="liq-bar" style="background:rgba(255,255,255,.05)"><div style="width:45%;height:100%;background:var(--text3);border-radius:3px"></div></div>
+        <div class="liq-detail">Psychological level with limit orders both sides</div>
+      </div>
+      <div class="liq-size" style="background:rgba(255,255,255,.06);color:var(--text2)">MED</div>
+    </div>
+
+    <div class="liq-zone">
+      <div class="liq-price" style="color:var(--amber-b)">$83,500</div>
+      <div class="liq-bar-area">
+        <div class="liq-bar-label"><span style="color:var(--amber-b)">LONG STOP CLUSTER</span></div>
+        <div class="liq-bar" style="background:rgba(245,158,11,.1)"><div style="width:80%;height:100%;background:var(--amber);border-radius:3px"></div></div>
+        <div class="liq-detail">Dense long stop-loss orders — wick target on pullback</div>
+      </div>
+      <div class="liq-size" style="background:rgba(245,158,11,.1);color:var(--amber-b)">LARGE</div>
+    </div>
+
+    <div class="liq-zone">
+      <div class="liq-price" style="color:var(--green-b)">$81,000</div>
+      <div class="liq-bar-area">
+        <div class="liq-bar-label"><span style="color:var(--green-b)">INSTITUTIONAL BID WALL</span></div>
+        <div class="liq-bar" style="background:rgba(16,185,129,.1)"><div style="width:100%;height:100%;background:var(--green);border-radius:3px"></div></div>
+        <div class="liq-detail">$400M+ aggregated institutional bids — major support zone</div>
+      </div>
+      <div class="liq-size" style="background:rgba(16,185,129,.1);color:var(--green-b)">XLARGE</div>
+    </div>
+  </div>
+
+  <div class="liq-card" style="border-color:rgba(59,130,246,.18)">
+    <div class="liq-label" style="color:var(--blue-b)"><span>ETH</span> Liquidity Zones</div>
+    <div style="font-size:7.5px;color:var(--text3);margin-bottom:10px">Current: <span style="color:var(--blue-b)">$3,247</span> · Squeeze risk: <span style="color:var(--rose-b)">MODERATE-HIGH</span></div>
+
+    <div class="liq-zone">
+      <div class="liq-price" style="color:var(--rose-b)">$3,380</div>
+      <div class="liq-bar-area">
+        <div class="liq-bar-label"><span style="color:var(--rose-b)">SHORT STOP CLUSTER</span></div>
+        <div class="liq-bar" style="background:rgba(244,63,94,.1)"><div style="width:88%;height:100%;background:var(--rose);border-radius:3px"></div></div>
+        <div class="liq-detail">Major short stops above $3,380 — breakout above triggers cascade</div>
+      </div>
+      <div class="liq-size" style="background:rgba(244,63,94,.1);color:var(--rose-b)">LARGE</div>
+    </div>
+
+    <div class="liq-zone">
+      <div class="liq-price" style="color:var(--text2)">$3,200</div>
+      <div class="liq-bar-area">
+        <div class="liq-bar-label"><span style="color:var(--text2)">ROUND NUMBER</span></div>
+        <div class="liq-bar" style="background:rgba(255,255,255,.05)"><div style="width:42%;height:100%;background:var(--text3);border-radius:3px"></div></div>
+        <div class="liq-detail">Current consolidation level — orders both sides</div>
+      </div>
+      <div class="liq-size" style="background:rgba(255,255,255,.06);color:var(--text2)">MED</div>
+    </div>
+
+    <div class="liq-zone">
+      <div class="liq-price" style="color:var(--amber-b)">$3,050</div>
+      <div class="liq-bar-area">
+        <div class="liq-bar-label"><span style="color:var(--amber-b)">LONG STOP CLUSTER</span></div>
+        <div class="liq-bar" style="background:rgba(245,158,11,.1)"><div style="width:78%;height:100%;background:var(--amber);border-radius:3px"></div></div>
+        <div class="liq-detail">Long liquidations below $3,050 — drop here accelerates downside</div>
+      </div>
+      <div class="liq-size" style="background:rgba(245,158,11,.1);color:var(--amber-b)">LARGE</div>
+    </div>
+
+    <div class="liq-zone">
+      <div class="liq-price" style="color:var(--green-b)">$2,850</div>
+      <div class="liq-bar-area">
+        <div class="liq-bar-label"><span style="color:var(--green-b)">DEMAND ZONE</span></div>
+        <div class="liq-bar" style="background:rgba(16,185,129,.1)"><div style="width:95%;height:100%;background:var(--green);border-radius:3px"></div></div>
+        <div class="liq-detail">Institutional accumulation zone from prior breakout — strong bid floor</div>
+      </div>
+      <div class="liq-size" style="background:rgba(16,185,129,.1);color:var(--green-b)">XLARGE</div>
+    </div>
+  </div>
+</div>
+
+<!-- TRADER BEHAVIOR -->
+<div class="sec-title mb-32" style="margin-bottom:14px">
+  <div style="font-size:11px">◬</div>
+  <h2>Trader Behavior & Popular Setups</h2>
+  <div class="line"></div>
+</div>
+
+<div class="behavior-card">
+  <div style="display:grid;grid-template-columns:1fr 260px;gap:12px">
+    <div>
+      <div class="setup-row header">
+        <div>Setup</div>
+        <div>Popularity</div>
+        <div style="text-align:center">Edge</div>
+        <div style="text-align:right">Note</div>
+      </div>
+      <div class="setup-row">
+        <div>
+          <div class="setup-name">Momentum breakout above resistance</div>
+          <div class="setup-asset">BTC · High conviction</div>
+        </div>
+        <div class="setup-bar-wrap">
+          <div class="setup-bar"><div class="setup-bar-fill" style="width:74%;background:var(--green)"></div></div>
+          <div class="setup-pct pos">74%</div>
+        </div>
+        <div class="setup-edge pos">POSITIVE</div>
+        <div class="setup-note">Volume confirming</div>
+      </div>
+      <div class="setup-row">
+        <div>
+          <div class="setup-name">Mean reversion at VWAP</div>
+          <div class="setup-asset">ETH · Regime-compatible</div>
+        </div>
+        <div class="setup-bar-wrap">
+          <div class="setup-bar"><div class="setup-bar-fill" style="width:61%;background:var(--green)"></div></div>
+          <div class="setup-pct pos">61%</div>
+        </div>
+        <div class="setup-edge pos">POSITIVE</div>
+        <div class="setup-note">Working in current regime</div>
+      </div>
+      <div class="setup-row">
+        <div>
+          <div class="setup-name">News fade after spike</div>
+          <div class="setup-asset">BTC · Contrarian</div>
+        </div>
+        <div class="setup-bar-wrap">
+          <div class="setup-bar"><div class="setup-bar-fill" style="width:44%;background:var(--amber)"></div></div>
+          <div class="setup-pct neu">44%</div>
+        </div>
+        <div class="setup-edge neu">NEUTRAL</div>
+        <div class="setup-note">News momentum persisting</div>
+      </div>
+      <div class="setup-row">
+        <div>
+          <div class="setup-name">Short into resistance</div>
+          <div class="setup-asset">BTC · Counter-trend</div>
+        </div>
+        <div class="setup-bar-wrap">
+          <div class="setup-bar"><div class="setup-bar-fill" style="width:31%;background:var(--rose)"></div></div>
+          <div class="setup-pct neg">31%</div>
+        </div>
+        <div class="setup-edge neg">NEGATIVE</div>
+        <div class="setup-note">Dangerous in bull regime</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:11px 13px">
+        <div style="font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:7px">Momentum Bias</div>
+        <div style="font-size:15px;font-weight:700;color:var(--green-b)">BULLISH</div>
+        <div style="font-size:8px;color:var(--text2);margin-top:3px">Strength 68/100</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid rgba(245,158,11,.2);border-radius:6px;padding:11px 13px">
+        <div style="font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:7px">Crowded Trade Warning</div>
+        <div style="font-size:9px;font-weight:700;color:var(--amber-b)">BTC LONG — MODERATE</div>
+        <div style="font-size:7.5px;color:var(--text2);margin-top:4px;line-height:1.5">64% net long on perps — watch for long squeeze if BTC rejects $87K</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:11px 13px">
+        <div style="font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:7px">Contrarian Signal</div>
+        <div style="font-size:7.5px;color:var(--text2);line-height:1.6">Watch for reversal if BTC hits $87–$88K with RSI &gt;75 and funding &gt;0.03%</div>
+        <div style="font-size:8px;font-weight:700;color:var(--text3);margin-top:5px">Confidence: 62%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">ALEXIS OPS · MISSION CONTROL · Trader League — La Logia · Market Environment · Gen 3 Wk 2 · BTC $84,320 · ETH $3,247</div>
+
+</div>
+</body>
+</html>
