@@ -1,0 +1,8 @@
+[phases.install]
+cmds = [
+  "rm -rf /app/node_modules",
+  "npm install"
+]
+
+[start]
+cmd = "node server.js"
