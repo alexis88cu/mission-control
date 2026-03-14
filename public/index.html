@@ -2584,7 +2584,7 @@ nav{flex:1;padding:12px;overflow-y:auto}
 // ════════════════════════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════════════════════════
-const API = 'http://localhost:3000/api';
+const API = window.location.origin + '/api';
 let state = { projects:[], agents:[], blockers:[], events:[], apiKeys:[] };
 let projFilter = 'all';
 let blockerFilter = 'all';
@@ -2597,7 +2597,8 @@ let weekChart;
 // WEBSOCKET
 // ════════════════════════════════════════════════════════════
 function connectWS() {
-  ws = new WebSocket('ws://localhost:3000');
+  const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  ws = new WebSocket(wsProto + '//' + window.location.host);
 
   ws.onopen = () => {
     document.getElementById('conn-status').className = 'connected';
