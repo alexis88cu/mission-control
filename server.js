@@ -13,7 +13,7 @@ const path = require('path');
 const os   = require('os');
 const { v4: uuidv4 } = require('uuid');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data.json');
 
 // ─── DATA LAYER ───────────────────────────────────────────────
@@ -2506,14 +2506,14 @@ app.get('/api/tools/results', (req, res) => {
 });
 
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log('');
   console.log('  ╔══════════════════════════════════════════════╗');
   console.log('  ║   MISSION CONTROL — ALEXIS OPS v2.0         ║');
   console.log('  ╠══════════════════════════════════════════════╣');
-  console.log(`  ║   Dashboard → http://localhost:${PORT}          ║`);
-  console.log(`  ║   API       → http://localhost:${PORT}/api      ║`);
-  console.log(`  ║   WebSocket → ws://localhost:${PORT}            ║`);
+  console.log(`  ║   Dashboard → http://0.0.0.0:${PORT}            ║`);
+  console.log(`  ║   API       → http://0.0.0.0:${PORT}/api        ║`);
+  console.log(`  ║   WebSocket → ws://0.0.0.0:${PORT}              ║`);
   console.log('  ╚══════════════════════════════════════════════╝');
   console.log('');
   console.log(`  [${new Date().toLocaleTimeString()}] Server online — Waiting for connections`);
