@@ -2503,6 +2503,10 @@ nav{flex:1;padding:12px;overflow-y:auto}
         <div class="field"><label class="field-label">Total Tasks</label><input id="proj-tasks" type="number" min="0" value="0"/></div>
         <div class="field"><label class="field-label">Done Tasks</label><input id="proj-done" type="number" min="0" value="0"/></div>
       </div>
+      <div class="grid-2">
+        <div class="field"><label class="field-label">Progress (%)</label><input id="proj-progress" type="number" min="0" max="100" value="0" placeholder="0–100"/></div>
+        <div class="field"><label class="field-label">Health (0–100)</label><input id="proj-health" type="number" min="0" max="100" value="100" placeholder="0–100"/></div>
+      </div>
       <div class="field">
         <label class="field-label">Tags</label>
         <div id="proj-tags-list" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px"></div>
@@ -3187,6 +3191,8 @@ function openProjectModal(id) {
   document.getElementById('proj-budget').value = p?.budget||'';
   document.getElementById('proj-tasks').value = p?.tasks||0;
   document.getElementById('proj-done').value = p?.done||0;
+  document.getElementById('proj-progress').value = p?.progress??0;
+  document.getElementById('proj-health').value = p?.health??100;
   document.getElementById('proj-notes').value = p?.notes||'';
   projTags = p?.tags ? [...p.tags] : [];
   projMilestones = p?.milestones ? [...p.milestones] : [];
@@ -3227,6 +3233,8 @@ async function saveProject() {
     budget: document.getElementById('proj-budget').value,
     tasks: parseInt(document.getElementById('proj-tasks').value)||0,
     done: parseInt(document.getElementById('proj-done').value)||0,
+    progress: parseInt(document.getElementById('proj-progress').value)||0,
+    health: parseInt(document.getElementById('proj-health').value)??100,
     notes: document.getElementById('proj-notes').value,
     tags: projTags,
     milestones: projMilestones,
@@ -4846,13 +4854,18 @@ function renderMCStats(mc) {
   const running  = workflows.filter(w => ['running','in_progress'].includes(w.status)).length;
   const blocked  = workflows.filter(w => w.status === 'blocked').length;
   const health   = projects.filter(p => p.health === 'nominal').length;
+  const totalProjects = (state.projects || []).length;
+  const totalAgents   = (state.agents   || []).length;
+
+  const sysIdEl = document.getElementById('mc-system-id');
+  if (sysIdEl) sysIdEl.textContent = `System ID: MC-ALEXIS-OPS-001 · Coordinating ${totalProjects} project${totalProjects!==1?'s':''} · ${totalAgents} agent${totalAgents!==1?'s':''}`;
 
   const stats = [
-    { label:'Connected Projects', value: projects.length,       color:'var(--violet-b)', sub:'all projects' },
+    { label:'Connected Projects', value: projects.length,       color:'var(--violet-b)', sub:`${totalProjects} total` },
     { label:'Active Workflows',   value: running,               color:'var(--cyan-b)',   sub:`${blocked} blocked` },
     { label:'System Health',      value: `${health}/${projects.length}`, color: health === projects.length ? 'var(--green-b)' : 'var(--amber-b)', sub:'nominal projects' },
     { label:'Pending Ops',        value: pendingOps.length,     color: pendingOps.length ? 'var(--amber-b)' : 'var(--green-b)', sub:'awaiting routing' },
-    { label:'Agents Online',      value: 12,                    color:'var(--text)',     sub:'across all projects' },
+    { label:'Agents Online',      value: totalAgents,           color:'var(--text)',     sub:'across all projects' },
     { label:'Coordinator',        value: mc._meta?.status === 'operational' ? 'ONLINE' : 'OFFLINE', color: mc._meta?.status === 'operational' ? 'var(--green-b)' : 'var(--rose-b)', sub:'v' + (mc._meta?.version||'1.0.0') },
   ];
 
