@@ -2939,7 +2939,8 @@ function renderDashboardEvents() {
 function initWeekChart() {
   const ctx = document.getElementById('weekChart');
   if(!ctx || weekChart) return;
-  weekChart = new Chart(ctx, {
+  if(typeof Chart === 'undefined') return;
+  try { weekChart = new Chart(ctx, {
     type:'bar',
     data:{
       labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
@@ -2959,7 +2960,7 @@ function initWeekChart() {
         y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',font:{family:'JetBrains Mono',size:10}}}
       }
     }
-  });
+  }); } catch(e) { console.error('[Chart] initWeekChart failed:', e.message); }
 }
 
 // ════════════════════════════════════════════════════════════
@@ -3459,21 +3460,25 @@ async function loadInitialState() {
       fetch('/api/keys')
     ]);
     if (stateRes.status==='fulfilled' && stateRes.value.ok) {
-      const s = await stateRes.value.json();
-      state.projects = s.projects;
-      state.agents   = s.agents;
-      state.blockers = s.blockers;
-      state.events   = s.events;
-      state.metrics  = s.metrics;
+      try {
+        const s = await stateRes.value.json();
+        state.projects = s.projects || state.projects;
+        state.agents   = s.agents   || state.agents;
+        state.blockers = s.blockers || state.blockers;
+        state.events   = s.events   || state.events;
+        state.metrics  = s.metrics  || state.metrics;
+      } catch(e) { console.error('[init] /api/state parse error:', e.message); }
     }
-    if (tradingRes.status==='fulfilled' && tradingRes.value.ok)  { state.trading         = await tradingRes.value.json(); }
-    if (secRes.status==='fulfilled'     && secRes.value.ok)      { state.securityGateway  = await secRes.value.json(); }
-    if (mcRes.status==='fulfilled'      && mcRes.value.ok)       { state.missionControl   = await mcRes.value.json(); }
-    if (skRes.status==='fulfilled'      && skRes.value.ok)       { state.skills           = await skRes.value.json(); }
-    if (keysRes.status==='fulfilled'    && keysRes.value.ok)     { state.apiKeys          = await keysRes.value.json(); }
+    if (tradingRes.status==='fulfilled' && tradingRes.value.ok)  { try { state.trading         = await tradingRes.value.json(); } catch(e) {} }
+    if (secRes.status==='fulfilled'     && secRes.value.ok)      { try { state.securityGateway  = await secRes.value.json();   } catch(e) {} }
+    if (mcRes.status==='fulfilled'      && mcRes.value.ok)       { try { state.missionControl   = await mcRes.value.json();    } catch(e) {} }
+    if (skRes.status==='fulfilled'      && skRes.value.ok)       { try { state.skills           = await skRes.value.json();    } catch(e) {} }
+    if (keysRes.status==='fulfilled'    && keysRes.value.ok)     { try { state.apiKeys          = await keysRes.value.json();  } catch(e) {} }
+  } catch(e) { console.error('[init] loadInitialState error:', e.message); }
+  finally {
     renderAll();
     checkTradingDataStatus();
-  } catch(e) { console.warn('Initial HTTP load error:', e); }
+  }
 }
 loadInitialState();
 connectWS();
