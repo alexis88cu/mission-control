@@ -2876,7 +2876,7 @@ function renderAll() {
 // DASHBOARD
 // ════════════════════════════════════════════════════════════
 function renderDashboardStats() {
-  const activeP = state.projects.filter(p=>p.status==='active').length;
+  if (!document.getElementById('stat-activeProj')) return;
   const totalP = state.projects.length;
   const activeA = state.agents.filter(a=>a.status==='active').length;
   const totalA = state.agents.length;
